@@ -11,10 +11,17 @@ import java.util.ArrayList;
 
 /**
  * Created by mike on 7/15/2015.
+ *
+ * Uses Holder pattern as a performance optimization
  */
 public class MainListArrayAdapter extends ArrayAdapter<EventLine> {
     private Context context;
     private ArrayList<EventLine> eventLines;
+
+    static class ViewHolder {
+        TextView titleText;
+        TextView counterText;
+    }
 
     public MainListArrayAdapter(Context context, ArrayList<EventLine> eventLines) {
         super(context, R.layout.main_list_item, eventLines);
@@ -24,14 +31,20 @@ public class MainListArrayAdapter extends ArrayAdapter<EventLine> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater =
-                (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.main_list_item, parent, false);
-        TextView titleText = (TextView) rowView.findViewById(R.id.event_line_title);
-        titleText.setText(eventLines.get(position).getTitle());
-//        titleText.setText(String.valueOf(position));
-        TextView counterText = (TextView) rowView.findViewById(R.id.event_line_count);
-        counterText.setText(String.valueOf(eventLines.get(position).getCount()));
+        View rowView = convertView;
+        if(rowView == null) {
+            LayoutInflater inflater =
+                    (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            rowView = inflater.inflate(R.layout.main_list_item, parent, false);
+            ViewHolder holder = new ViewHolder();
+            holder.titleText = (TextView) rowView.findViewById(R.id.event_line_title);
+            holder.counterText = (TextView) rowView.findViewById(R.id.event_line_count);
+            rowView.setTag(holder);
+        }
+
+        ViewHolder holder = (ViewHolder)rowView.getTag();
+        holder.counterText.setText(String.valueOf(eventLines.get(position).getCount()));
+        holder.titleText.setText(eventLines.get(position).getTitle());
 
         return rowView;
     }
