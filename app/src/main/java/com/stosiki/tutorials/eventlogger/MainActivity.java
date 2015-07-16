@@ -3,7 +3,9 @@ package com.stosiki.tutorials.eventlogger;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,11 +16,13 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends ListActivity implements ActionMode.Callback {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ArrayList<EventLine> data;
+    protected Object actionMode;
+    protected int selectedItem = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,19 @@ public class MainActivity extends ListActivity {
             }
         });
 
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if(actionMode != null) {
+                    return false;
+                }
+                selectedItem = position;
+                actionMode = MainActivity.this.startActionMode(MainActivity.this);
+                view.setSelected(true);
+                return true;
+            }
+        });
     }
 
     private void createFakeData() {
@@ -86,10 +103,40 @@ public class MainActivity extends ListActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_delete:
+                deleteLine();
+                mode.finish();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void deleteLine() {
+        data.remove(selectedItem);
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        actionMode = null;
+        selectedItem = -1;
     }
 }
