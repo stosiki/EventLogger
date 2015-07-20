@@ -30,8 +30,8 @@ public class MainListArrayAdapter extends SimpleCursorAdapter {
         TextView counterText;
     }
 
-    public MainListArrayAdapter(Context context, Cursor cursor) {
-        super(context, R.layout.main_list_item, cursor, FROM, TO, FLAG_REGISTER_CONTENT_OBSERVER);
+    public MainListArrayAdapter(Context context) {
+        super(context, R.layout.main_list_item, null, FROM, TO, FLAG_REGISTER_CONTENT_OBSERVER);
 
         this.context = context;
         this.eventLines = eventLines;

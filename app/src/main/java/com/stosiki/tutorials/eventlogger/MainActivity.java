@@ -1,6 +1,9 @@
 package com.stosiki.tutorials.eventlogger;
 
 import android.app.DialogFragment;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,9 +24,10 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity
-    implements CreateEventLineDialogListener{
+    implements CreateEventLineDialogListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = MainActivity.class.getName();
+    private static final int LOADER_ID = 1;
 
     private EventLinesDataSource linesDao;
     private EventsDataSource eventsDao;
@@ -64,8 +68,7 @@ public class MainActivity extends AppCompatActivity
 
         listView = (ListView) findViewById(android.R.id.list);
 
-        Cursor eventLinesCursor = linesDao.getEventLinesCursor();
-        eventLinesAdapter = new MainListArrayAdapter(this, eventLinesCursor);
+        eventLinesAdapter = new MainListArrayAdapter(this);
         listView.setAdapter(eventLinesAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -142,6 +145,9 @@ public class MainActivity extends AppCompatActivity
                 showAddLineDialog();
             }
         });
+
+        LoaderManager loaderManager = getLoaderManager();
+        loaderManager.initLoader(LOADER_ID, null, this);
     }
 
     private void showAddLineDialog() {
@@ -222,6 +228,21 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+//        return new CursorLoader(this, )
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
 
     }
 }
